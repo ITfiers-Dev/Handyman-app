@@ -293,6 +293,15 @@ const HandymanRegistration = () => {
                       "Electrical",
                       "Painting",
                       "Cleaning",
+                      "Residential Plumbing",
+                      "Commercial Plumbing",
+                      "Emergency Plumbing",
+                      "Pipe Repair & Replacement",
+                      "Water Heater Installation & Repair",
+                      "Sewer & Drain Cleaning",
+                      "Leak Detection & Repair",
+                      "Gas Line Services",
+                      "Bathroom & Kitchen Plumbing",
                       "Other",
                     ]}
                     value={formData.expertise}
@@ -304,6 +313,18 @@ const HandymanRegistration = () => {
                     options={[
                       "Plumbing",
                       "Electrical",
+                      "Faucet & Sink Installation",
+                      "Toilet Installation & Repair",
+                      "Water Leak Repairs",
+                      "Shower & Bathtub Plumbing",
+                      "Drain Unclogging",
+                      "Sump Pump Installation",
+                      "Septic Tank Repair & Maintenance",
+                      "Water Filtration System Installation",
+                      "Radiant Floor Heating",
+                      "Boiler Installation & Repair",
+                      "Gas Pipe Installation & Maintenance",
+                      "Hydro Jetting",
                       "Painting",
                       "Cleaning",
                       "Other",
@@ -439,15 +460,15 @@ const HandymanRegistration = () => {
                 <Card
                   elevation={5}
                   sx={{
-                    padding: "6px 12px", 
+                    padding: "6px 12px",
                     boxShadow: 3,
                     borderRadius: 4,
                     backgroundColor: "#f5f5f5",
                     border: "1px solid #ddd",
-                    minHeight: "30px", 
+                    minHeight: "30px",
                     display: "flex",
-                    alignItems: "center", 
-                    fontSize: "0.875rem", 
+                    alignItems: "center",
+                    fontSize: "0.875rem",
                   }}
                 >
                   {message}
