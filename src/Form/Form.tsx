@@ -93,7 +93,7 @@ const HandymanRegistration = () => {
     setMessage(""); // Reset message before new request
   
     try {
-      const res = await updateDBPost(formData);
+      const res = await updateDBPost({data: formData});
       
       setMessage(res?.message || "Successfully updated"); // Use optional chaining
       console.log(res);
@@ -117,7 +117,7 @@ const HandymanRegistration = () => {
     <>
       <Box sx={{ display: "flex", justifyContent: "center", mt: 15 }}>
         <Paper
-          elevation={5}
+          elevation={10}
           sx={{
             width: { xs: "90%", sm: "70%", md: "50%", lg: "40%" }, // Responsive width
             maxWidth: 600, // Limit maximum width for large screens
