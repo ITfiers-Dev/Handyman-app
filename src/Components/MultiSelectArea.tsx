@@ -12,32 +12,32 @@ const cities = jsonData.data.cities.map((city) => ({
     lat: geo.lat,
     lng: geo.lng,
     type: geo.type,
-    cityId:geo.cityId,
-    createdAt:geo.createdAt,
-    geofence_id:geo.geofence_id,
-    tp_code:geo.tp_code,
-    tp_type:geo.tp_type,
-    rest_brId:geo.rest_brId,
+    cityId: geo.cityId,
+    createdAt: geo.createdAt,
+    geofence_id: geo.geofence_id,
+    tp_code: geo.tp_code,
+    tp_type: geo.tp_type,
+    rest_brId: geo.rest_brId,
   })),
 }));
 
-export default function MultiSelectArea({ formData, setFormData }: any) {
+export default function MultiSelectArea({ setFormData }: any) {
   const [selectedCities, setSelectedCities] = useState<any[]>([]);
   const [selectedAreas, setSelectedAreas] = useState<any[]>([]);
+
   const availableAreas = selectedCities
     .flatMap((city) => city.geofences)
     .filter((area, index, self) => index === self.findIndex((a) => a.id === area.id));
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 4, width: 400 }}>
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 3, width: { xs: "100%", sm: 400 } }}>
       <Card
         sx={{
-          padding: 2,
+          padding: { xs: 2, sm: 3 },
           boxShadow: 3,
           borderRadius: 2,
           backgroundColor: "#f5f5f5",
           border: "1px solid #ddd",
-          gap: 4,
         }}
       >
         {/* Multi-Select City Dropdown */}
@@ -48,16 +48,16 @@ export default function MultiSelectArea({ formData, setFormData }: any) {
           value={selectedCities}
           onChange={(_, newValue) => {
             setSelectedCities(newValue);
-            setSelectedAreas([]); // Reset areas when cities change
+            setSelectedAreas([]);
             setFormData((prev: any) => ({
               ...prev,
-              servingCity: newValue.map((city) => city.name), // Store selected cities
-              servingAreas: [], // Reset areas
+              servingCity: newValue.map((city) => city.name),
+              servingAreas: [],
             }));
           }}
           renderTags={(value, getTagProps) =>
             value.map((option, index) => (
-              <Chip key={option.id} label={option.name} {...getTagProps({ index })} />
+              <Chip label={option.name} {...getTagProps({ index })} />
             ))
           }
           renderInput={(params) => (
@@ -75,22 +75,29 @@ export default function MultiSelectArea({ formData, setFormData }: any) {
             setSelectedAreas(newValue);
             setFormData((prev: any) => ({
               ...prev,
-              servingAreas: newValue.map((area) => area.area_name), // Store selected areas
+              servingAreas: newValue.map((area) => area.area_name),
             }));
           }}
           renderTags={(value, getTagProps) =>
             value.map((option, index) => (
-              <Chip key={option.id} label={option.area_name} {...getTagProps({ index })} />
+              <Chip  label={option.area_name} {...getTagProps({ index })} />
             ))
           }
+          filterOptions={(options, { inputValue }) => {
+            const inputLower = inputValue.toLowerCase();
+            return options
+              .filter((option) => option?.area_name?.toLowerCase().includes(inputLower))
+              .sort((a, b) => {
+                const aStartsWith = a?.area_name?.toLowerCase().startsWith(inputLower);
+                const bStartsWith = b?.area_name?.toLowerCase().startsWith(inputLower);
+
+                if (aStartsWith && !bStartsWith) return -1;
+                if (!aStartsWith && bStartsWith) return 1;
+                return 0;
+              });
+          }}
           renderInput={(params) => (
-            <TextField
-              {...params}
-              label="Serving Areas"
-              variant="outlined"
-              fullWidth
-              sx={{ marginTop: 2, marginBottom: 2 }}
-            />
+            <TextField {...params} label="Serving Areas" variant="outlined" fullWidth sx={{ mt: 2, mb: 2 }} />
           )}
           disabled={selectedCities.length === 0}
         />

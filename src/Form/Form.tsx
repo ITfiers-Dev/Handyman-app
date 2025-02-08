@@ -1,6 +1,13 @@
 // import { Grid, Paper, Typography, Radio, RadioGroup, FormControl, FormControlLabel, TextField, Button } from "@mui/material";
-import { Box, Button, Card, Paper, SelectChangeEvent, Typography } from "@mui/material";
-import {  useState } from "react";
+import {
+  Box,
+  Button,
+  Card,
+  Paper,
+  SelectChangeEvent,
+  Typography,
+} from "@mui/material";
+import { useState } from "react";
 import CustomRadio from "../Components/CustomRadio";
 import CustomTextField from "../Components/CustomTextField";
 import CustomFileUpload from "../Components/CustomFileUpload";
@@ -8,7 +15,7 @@ import CustomMultiSelect from "../Components/CustomMultiSelect";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { updateDBPost } from "../Api/backend";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import TimePicker from '../Components/TimePicker';
+import TimePicker from "../Components/TimePicker";
 import dayjs from "dayjs";
 import AreaTextField from "../Components/AreaTextField";
 import MultiSelectArea from "../Components/MultiSelectArea";
@@ -16,7 +23,8 @@ import MultiSelectArea from "../Components/MultiSelectArea";
 // import dayjs from "dayjs";
 
 const HandymanRegistration = () => {
-  const [loading,setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
   const [formData, setFormData] = useState({
     usedPlatforms: "",
     platformName: "",
@@ -32,7 +40,7 @@ const HandymanRegistration = () => {
     area: "",
     city: "",
     photo: null,
-    idCardNumber:"",
+    idCardNumber: "",
     idCardImageFront: null,
     idCardImageBack: null,
     yearsOfExperience: "",
@@ -41,7 +49,7 @@ const HandymanRegistration = () => {
     servingCity: [],
     servingAreas: [],
     workingDays: [],
-    workingHours:"",
+    workingHours: "",
     startTime: "",
     endTime: "",
     easyPaisaNumber: "",
@@ -50,64 +58,58 @@ const HandymanRegistration = () => {
     bankAccountNumber: "",
   });
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>|SelectChangeEvent<unknown>) => {
-    const target = event.target as HTMLInputElement | { name: string; value: unknown };
+  const handleChange = (
+    event: React.ChangeEvent<HTMLInputElement> | SelectChangeEvent<unknown>
+  ) => {
+    const target = event.target as
+      | HTMLInputElement
+      | { name: string; value: unknown };
     const { name, value, files } = target as HTMLInputElement;
-    
-    console.log("heloe");
-    console.log(name, value);
-  
-    // Handle file input (for images)
     if (["photo", "idCardImageFront", "idCardImageBack"].includes(name)) {
       if (files && files.length > 0) {
         const file = files[0];
         const reader = new FileReader();
-  
         reader.onloadend = () => {
           const base64String = reader.result as string;
           setFormData((prev) => ({ ...prev, [name]: base64String }));
         };
-  
-        reader.readAsDataURL(file); // Convert file to base64
+
+        reader.readAsDataURL(file); 
       }
       return;
     }
-
     if (Array.isArray(value)) {
       setFormData((prev) => ({ ...prev, [name]: value }));
       return;
     }
-  
-    // Handle normal text input
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-  
-  
-   
-  
-  console.log("formData",formData)
+
+  console.log("formData", formData);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    // console.log("hellow")
+    setLoading(true);
+    setMessage(""); // Reset message before new request
+  
     try {
-      setLoading(true)
       const res = await updateDBPost(formData);
-      setLoading(false)
-      // Optionally, handle the response from the updateDBPost function
-       console.log(res);
-    } catch (error) {
+      
+      setMessage(res?.message || "Successfully updated"); // Use optional chaining
+      console.log(res);
+    } catch (error: any) {
       console.error("An error occurred:", error);
-      // Optional: Display an alert or other user feedback for the error
+      setMessage("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false); 
     }
   };
-  console.log("formData",formData)
   
 
   const handleDateChange = (date: any, name: string) => {
     if (date) {
-      const formattedDate = dayjs(date).format("DD/MM/YYYY"); 
-      console.log(formattedDate) // ✅ Store in standard format
+      const formattedDate = dayjs(date).format("DD/MM/YYYY");
+      console.log(formattedDate); // ✅ Store in standard format
       setFormData((prev) => ({ ...prev, [name]: formattedDate })); // ✅ Update state
     }
   };
@@ -172,131 +174,145 @@ const HandymanRegistration = () => {
               onChange={handleChange}
             />
 
-           {formData.interestedInPlumbingServices === "yes" && formData.haveSmartPhone === "yes" && (
-            <>
-             <Typography
-              variant="h6"
-              gutterBottom
-              align="left"
-              sx={{ fontWeight: 600 }}
-            >
-              Personal Information
-            </Typography>
-            <CustomTextField
-              label="Full Name"
-              value={formData.fullName}
-              name="fullName"
-              onChange={handleChange}
-            />
-            <Card
-              sx={{
-                padding: 2,
-                boxShadow: 3,
-                borderRadius: 2,
-                backgroundColor: "#f5f5f5",
-                border: "1px solid #ddd",
-                mb: 2,
-              }}
-            >
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DatePicker
-                  label="Date of Birth"
-                  value={formData.dateOfBirth ? dayjs(formData.dateOfBirth) : null}
-                  onChange={(date: any) =>
-                    handleDateChange(date, "dateOfBirth")
-                  }
-                  format="DD/MM/YYYY"
-                  sx={{ width: "100%" }}
-                  slotProps={{ textField: { fullWidth: true } }}
-                />
-              </LocalizationProvider>
-            </Card>
-            <CustomTextField
-              label="WhatsApp Number"
-              value={formData.whatsappNumber}
-              name="whatsappNumber"
-              onChange={handleChange}
-              type="number"
-            />
-            <CustomTextField
-              label="Other Contact Number"
-              value={formData.otherContactNumber}
-              name="otherContactNumber"
-              onChange={handleChange}
-              type="number"
-            />
-            <CustomTextField
-              label="Complete Address"
-              value={formData.completeAddress}
-              name="completeAddress"
-              onChange={handleChange}
-              type="text"
-            />
-            
-            <Box mb={2} >
-            <AreaTextField formData={formData} setFormData={setFormData}/>
-            </Box>
-            <CustomFileUpload
-              label="Photo"
-              name="photo"
-              onChange={handleChange}
-              value={formData.photo}
-            />
-            <CustomTextField
-              label="ID Card Number"
-              value={formData.idCardNumber}
-              name="idCardNumber"
-              onChange={handleChange}
-              type="number"
-            />
-            <CustomFileUpload
-              label="ID Card Image Front"
-              name="idCardImageFront"
-              onChange={handleChange}
-              value={formData.idCardImageFront}
-            />
-            <CustomFileUpload
-              label="ID Card Image Back"
-              name="idCardImageBack"
-              onChange={handleChange}
-              value={formData.idCardImageBack}
-            />
-            <Typography
-              variant="h6"
-              gutterBottom
-              align="left"
-              sx={{ fontWeight: 600 }}
-            >
-              Professional Details
-            </Typography>
-            <CustomTextField
-              label="Years of Experience"
-              value={formData.yearsOfExperience}
-              name="yearsOfExperience"
-              onChange={handleChange}
-              type="number"
-            />
-              <CustomMultiSelect
-              label="Expertise"
-             options={["Plumbing", "Electrical", "Painting", "Cleaning", "Other"]}
-             value={formData.expertise}
-             name="expertise"
-             onChange={handleChange}
-               />
-            <CustomMultiSelect
-              label="Specialties"
-              options={[
-                "Plumbing",
-                "Electrical",
-                "Painting",
-                "Cleaning",
-                "Other",
-              ]}
-              value={formData.specialization}
-              name="specialization"
-              onChange={handleChange}
-            />
-            {/* <CustomMultiSelect
+            {formData.interestedInPlumbingServices === "yes" &&
+              formData.haveSmartPhone === "yes" && (
+                <>
+                  <Typography
+                    variant="h6"
+                    gutterBottom
+                    align="left"
+                    sx={{ fontWeight: 600 }}
+                  >
+                    Personal Information
+                  </Typography>
+                  <CustomTextField
+                    label="Full Name"
+                    value={formData.fullName}
+                    name="fullName"
+                    onChange={handleChange}
+                  />
+                  <Card
+                    sx={{
+                      padding: 2,
+                      boxShadow: 3,
+                      borderRadius: 2,
+                      backgroundColor: "#f5f5f5",
+                      border: "1px solid #ddd",
+                      mb: 2,
+                    }}
+                  >
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DatePicker
+                        label="Date of Birth"
+                        value={
+                          formData.dateOfBirth
+                            ? dayjs(formData.dateOfBirth)
+                            : null
+                        }
+                        onChange={(date: any) =>
+                          handleDateChange(date, "dateOfBirth")
+                        }
+                        format="DD/MM/YYYY"
+                        sx={{ width: "100%" }}
+                        slotProps={{ textField: { fullWidth: true } }}
+                      />
+                    </LocalizationProvider>
+                  </Card>
+                  <CustomTextField
+                    label="WhatsApp Number"
+                    value={formData.whatsappNumber}
+                    name="whatsappNumber"
+                    onChange={handleChange}
+                    type="number"
+                  />
+                  <CustomTextField
+                    label="Other Contact Number"
+                    value={formData.otherContactNumber}
+                    name="otherContactNumber"
+                    onChange={handleChange}
+                    type="number"
+                  />
+                  <CustomTextField
+                    label="Complete Address"
+                    value={formData.completeAddress}
+                    name="completeAddress"
+                    onChange={handleChange}
+                    type="text"
+                  />
+
+                  <Box mb={2}>
+                    <AreaTextField
+                      formData={formData}
+                      setFormData={setFormData}
+                    />
+                  </Box>
+                  <CustomFileUpload
+                    label="Photo"
+                    name="photo"
+                    onChange={handleChange}
+                    value={formData.photo}
+                  />
+                  <CustomTextField
+                    label="ID Card Number"
+                    value={formData.idCardNumber}
+                    name="idCardNumber"
+                    onChange={handleChange}
+                    type="number"
+                  />
+                  <CustomFileUpload
+                    label="ID Card Image Front"
+                    name="idCardImageFront"
+                    onChange={handleChange}
+                    value={formData.idCardImageFront}
+                  />
+                  <CustomFileUpload
+                    label="ID Card Image Back"
+                    name="idCardImageBack"
+                    onChange={handleChange}
+                    value={formData.idCardImageBack}
+                  />
+                  <Typography
+                    variant="h6"
+                    gutterBottom
+                    align="left"
+                    sx={{ fontWeight: 600 }}
+                  >
+                    Professional Details
+                  </Typography>
+                  <CustomTextField
+                    label="Years of Experience"
+                    value={formData.yearsOfExperience}
+                    name="yearsOfExperience"
+                    onChange={handleChange}
+                    type="number"
+                  />
+                  <CustomMultiSelect
+                    label="Expertise"
+                    options={[
+                      "Plumbing",
+                      "Electrical",
+                      "Painting",
+                      "Cleaning",
+                      "Other",
+                    ]}
+                    value={formData.expertise}
+                    name="expertise"
+                    onChange={handleChange}
+                  />
+                  <CustomMultiSelect
+                    label="Specialties"
+                    options={[
+                      "Plumbing",
+                      "Electrical",
+                      "Painting",
+                      "Cleaning",
+                      "Other",
+                    ]}
+                    value={formData.specialization}
+                    name="specialization"
+                    onChange={handleChange}
+                  />
+                  {/* <CustomMultiSelect
               label="Serving City"
               options={["Rwalpindi", "Islambad"]}
               value={formData.servingCity}
@@ -310,110 +326,135 @@ const HandymanRegistration = () => {
               name="servingAreas"
               onChange={handleChange}
             /> */}
-            <Box mb={2} mt={1}>
-            <MultiSelectArea formData={formData} setFormData={setFormData}/>
+                  <Box mb={2} mt={1}>
+                    <MultiSelectArea
+                      formData={formData}
+                      setFormData={setFormData}
+                    />
+                  </Box>
+                  <Typography
+                    variant="h6"
+                    gutterBottom
+                    align="left"
+                    sx={{ fontWeight: 600 }}
+                  >
+                    Availability & Pricing
+                  </Typography>
+                  <CustomMultiSelect
+                    label="Working Days"
+                    options={[
+                      "Monday",
+                      "Tuesday",
+                      "Wednesday",
+                      "Thursday",
+                      "Friday",
+                      "Saturday",
+                      "Sunday",
+                    ]}
+                    value={formData.workingDays}
+                    name="workingDays"
+                    onChange={handleChange}
+                  />
+                  <CustomTextField
+                    label="Working Hours"
+                    value={formData.workingHours}
+                    name="workingHours"
+                    onChange={handleChange}
+                    type="text"
+                  />
+                  <TimePicker
+                    label=" Working Start Time"
+                    value={formData.startTime}
+                    name="startTime"
+                    onChange={handleChange}
+                    helperText="Pick a starting time"
+                  />
+                  <TimePicker
+                    label=" Working End Time"
+                    value={formData.endTime}
+                    name="endTime"
+                    onChange={handleChange}
+                    helperText="Pick a starting time"
+                  />
+                  <Typography
+                    variant="h6"
+                    gutterBottom
+                    align="left"
+                    sx={{ fontWeight: 600 }}
+                  >
+                    Bank & Payment Details
+                  </Typography>
+                  <CustomTextField
+                    label="Easy Paisa Number"
+                    value={formData.easyPaisaNumber}
+                    name="easyPaisaNumber"
+                    onChange={handleChange}
+                    type="number"
+                  />
+                  <CustomTextField
+                    label="Jazz Cash Number"
+                    value={formData.jazzCashNumber}
+                    name="jazzCashNumber"
+                    onChange={handleChange}
+                    type="number"
+                  />
+                  <CustomTextField
+                    label="Bank Name"
+                    value={formData.bankName}
+                    name="bankName"
+                    onChange={handleChange}
+                    type="text"
+                  />
+                  <CustomTextField
+                    label="Bank Account Number"
+                    value={formData.bankAccountNumber}
+                    name="bankAccountNumber"
+                    onChange={handleChange}
+                    type="number"
+                  />
+                </>
+              )}
+            <Box sx={{ display: "flex", alignItems: "center", gap: 4 }}>
+              {/* Submit Button */}
+              <Button
+                variant="contained"
+                disabled={loading}
+                sx={{
+                  backgroundColor: "#2196F3",
+                  color: "white",
+                  padding: "10px 20px",
+                  fontSize: "1rem",
+                  borderRadius: "18px",
+                  "&:hover": {
+                    backgroundColor: "#21CBF3",
+                  },
+                }}
+                type="submit"
+              >
+                {loading ? "Submitting..." : "Submit"}
+              </Button>
+
+              {/* Message Display */}
+              {message && (
+                <Card
+                  elevation={5}
+                  sx={{
+                    padding: "6px 12px", 
+                    boxShadow: 3,
+                    borderRadius: 4,
+                    backgroundColor: "#f5f5f5",
+                    border: "1px solid #ddd",
+                    minHeight: "30px", 
+                    display: "flex",
+                    alignItems: "center", 
+                    fontSize: "0.875rem", 
+                  }}
+                >
+                  {message}
+                </Card>
+              )}
             </Box>
-            <Typography
-              variant="h6"
-              gutterBottom
-              align="left"
-              sx={{ fontWeight: 600 }}
-            >
-              Availability & Pricing
-            </Typography>
-            <CustomMultiSelect
-              label="Working Days"
-              options={[
-                "Monday",
-                "Tuesday",
-                "Wednesday",
-                "Thursday",
-                "Friday",
-                "Saturday",
-                "Sunday",
-              ]}
-              value={formData.workingDays}
-              name="workingDays"
-              onChange={handleChange}
-            />
-            <CustomTextField
-              label="Working Hours"
-              value={formData.workingHours}
-              name="workingHours"
-              onChange={handleChange}
-              type="text"
-            />
-              <TimePicker
-              label="Start Time"
-              value={formData.startTime}
-              name="startTime"
-              onChange={handleChange}
-               helperText="Pick a starting time"
-               />
-              <TimePicker
-              label="End Time"
-              value={formData.endTime}
-              name="endTime"
-              onChange={handleChange}
-               helperText="Pick a starting time"
-               />
-            <Typography
-              variant="h6"
-              gutterBottom
-              align="left"
-              sx={{ fontWeight: 600 }}
-            >
-              Bank & Payment Details
-            </Typography>
-            <CustomTextField
-              label="Easy Paisa Number"
-              value={formData.easyPaisaNumber}
-              name="easyPaisaNumber"
-              onChange={handleChange}
-              type="number"
-            />
-            <CustomTextField
-              label="Jazz Cash Number"
-              value={formData.jazzCashNumber}
-              name="jazzCashNumber"
-              onChange={handleChange}
-              type="number"
-            />
-            <CustomTextField
-              label="Bank Name"
-              value={formData.bankName}
-              name="bankName"
-              onChange={handleChange}
-              type="text"
-            />
-            <CustomTextField
-              label="Bank Account Number"
-              value={formData.bankAccountNumber}
-              name="bankAccountNumber"
-              onChange={handleChange}
-              type="number"
-            />
-            </>
-           )}
-             <Button
-            variant="contained"
-            sx={{
-              backgroundColor: "#2196F3",
-              color: "white",
-              padding: "10px 20px",
-              size:'small',
-              fontSize: "1rem",
-              borderRadius: "18px",
-              "&:hover": {
-                backgroundColor: "#21CBF3",
-              },
-            }}
-            type="submit"
-          >
-            {loading ? "Loading..." : "Submit"}
-          </Button>
           </form>
-         
         </Paper>
       </Box>
     </>
@@ -421,5 +462,3 @@ const HandymanRegistration = () => {
 };
 
 export default HandymanRegistration;
-
-

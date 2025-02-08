@@ -16,7 +16,7 @@ interface CustomMultiSelectProps {
   options: string[];
   value: string[]; // Now it's an array of strings
   name: string;
-  onChange: (name: string, value: string[]) => void; // Pass name & array
+  onChange: (event : SelectChangeEvent<string[]>) => void;
 }
 
 const CustomMultiSelect: React.FC<CustomMultiSelectProps> = ({
