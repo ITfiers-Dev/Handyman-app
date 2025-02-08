@@ -113,6 +113,44 @@ const HandymanRegistration = () => {
       setFormData((prev) => ({ ...prev, [name]: formattedDate })); // ✅ Update state
     }
   };
+
+  const handleReset = () => {
+    setFormData({
+      usedPlatforms: "",
+      platformName: "",
+      comfortableWithApps: "",
+      customerChallenges: "",
+      interestedInPlumbingServices: "",
+      haveSmartPhone: "",
+      fullName: "",
+      dateOfBirth: "",
+      whatsappNumber: "",
+      otherContactNumber: "",
+      completeAddress: "",
+      area: "",
+      city: "",
+      photo: null,
+      idCardNumber: "",
+      idCardImageFront: null,
+      idCardImageBack: null,
+      yearsOfExperience: "",
+      expertise: [],
+      specialization: [],
+      servingCity: [],
+      servingAreas: [],
+      workingDays: [],
+      workingHours: "",
+      startTime: "",
+      endTime: "",
+      easyPaisaNumber: "",
+      jazzCashNumber: "",
+      bankName: "",
+      bankAccountNumber: "",
+    });
+    setMessage("");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+  
   return (
     <>
       <Box sx={{ display: "flex", justifyContent: "center", mt: 15 }}>
@@ -435,17 +473,29 @@ const HandymanRegistration = () => {
                   />
                 </>
               )}
-            <Box sx={{ display: "flex", alignItems: "center", gap: 4 }}>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                flexWrap: "wrap", // Wraps content on small screens
+                gap: { xs: 2, sm: 3, md: 4 },
+                justifyContent: { xs: "center", sm: "start" }, // Center items on small screens
+                flexDirection: { xs: "column", sm: "row" }, // Column layout on mobile
+                textAlign: { xs: "center", sm: "left" }, // Center text on mobile
+              }}
+            >
               {/* Submit Button */}
               <Button
                 variant="contained"
                 disabled={loading}
+                size="small"
                 sx={{
                   backgroundColor: "#2196F3",
                   color: "white",
-                  padding: "10px 20px",
-                  fontSize: "1rem",
+                  padding: { xs: "8px 16px", sm: "10px 20px" },
+                  fontSize: { xs: "0.875rem", sm: "1rem" },
                   borderRadius: "18px",
+                  minWidth: { xs: "100%", sm: "auto" },
                   "&:hover": {
                     backgroundColor: "#21CBF3",
                   },
@@ -468,11 +518,34 @@ const HandymanRegistration = () => {
                     minHeight: "30px",
                     display: "flex",
                     alignItems: "center",
-                    fontSize: "0.875rem",
+                    justifyContent: "center", // Centers text inside the card
+                    fontSize: { xs: "0.875rem", sm: "1rem" },
+                    maxWidth: { xs: "100%", sm: "auto" }, // Full width on mobile
+                    textAlign: "center", // Centers text
                   }}
                 >
                   {message}
                 </Card>
+              )}
+
+              {/* Reset Button */}
+              {message && (
+                <Button
+                  variant="contained"
+                  component="span"
+                  size="small"
+                  sx={{
+                    marginTop: { xs: 2, sm: 3 },
+                    borderRadius: 3,
+                    bgcolor: "#2196F3",
+                    color: "white",
+                    width: { xs: "100%", sm: "auto" }, // Full width on small screens
+                    "&:hover": { bgcolor: "#1976D2" },
+                  }}
+                  onClick={handleReset}
+                >
+                  Reset
+                </Button>
               )}
             </Box>
           </form>
