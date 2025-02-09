@@ -1,5 +1,6 @@
 // import { Grid, Paper, Typography, Radio, RadioGroup, FormControl, FormControlLabel, TextField, Button } from "@mui/material";
 import {
+  Alert,
   Box,
   Button,
   Card,
@@ -25,6 +26,7 @@ import MultiSelectArea from "../Components/MultiSelectArea";
 const HandymanRegistration = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
   const [formData, setFormData] = useState({
     usedPlatforms: "",
     platformName: "",
@@ -56,6 +58,12 @@ const HandymanRegistration = () => {
     jazzCashNumber: "",
     bankName: "",
     bankAccountNumber: "",
+    avgJobsPerDay: "", // Average number of jobs per day
+    avgAmountPerJob: "", // Average amount per job
+    permanentCustomers: "", // Number of permanent customers
+    internetHours: "", // Hours mobile remains connected to the internet
+    canInstallApp: "", // Can install and use mobile app? (Yes/No)
+    frequentlyUsedApps: []
   });
 
   const handleChange = (
@@ -95,11 +103,15 @@ const HandymanRegistration = () => {
     try {
       const res = await updateDBPost({data: formData});
       
-      setMessage(res?.message || "Successfully updated"); // Use optional chaining
-      console.log(res);
+      if (res.status ==="success"){
+        setMessage(res?.message || "Successfully updated"); // Use optional chaining
+        console.log(res);
+      }else{
+        setError(res?.message || "Something went wrong. Please try again.");
+      }
     } catch (error: any) {
       console.error("An error occurred:", error);
-      setMessage("Something went wrong. Please try again.");
+      setError(error?.message || "Something went wrong. Please try again.");
     } finally {
       setLoading(false); 
     }
@@ -146,6 +158,12 @@ const HandymanRegistration = () => {
       jazzCashNumber: "",
       bankName: "",
       bankAccountNumber: "",
+      avgJobsPerDay: "", // Average number of jobs per day
+      avgAmountPerJob: "", // Average amount per job
+      permanentCustomers: "", // Number of permanent customers
+      internetHours: "", // Hours mobile remains connected to the internet
+      canInstallApp: "", // Can install and use mobile app? (Yes/No)
+      frequentlyUsedApps: []
     });
     setMessage("");
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -298,13 +316,13 @@ const HandymanRegistration = () => {
                     type="number"
                   />
                   <CustomFileUpload
-                    label="ID Card Image Front"
+                    label="ID Card Front Image"
                     name="idCardImageFront"
                     onChange={handleChange}
                     value={formData.idCardImageFront}
                   />
                   <CustomFileUpload
-                    label="ID Card Image Back"
+                    label="ID Card Back Image"
                     name="idCardImageBack"
                     onChange={handleChange}
                     value={formData.idCardImageBack}
@@ -435,6 +453,64 @@ const HandymanRegistration = () => {
                     onChange={handleChange}
                     helperText="Pick a starting time"
                   />
+                   <Typography
+                    variant="h6"
+                    gutterBottom
+                    align="left"
+                    sx={{ fontWeight: 600 }}
+                  >
+                  User Activity & Engagement Metrics
+                  </Typography>
+                  <CustomTextField
+                    label="Average number of jobs per day"
+                    value={formData.avgJobsPerDay}
+                    name="avgJobsPerDay"
+                    onChange={handleChange}
+                    type="number"
+                  />
+                  <CustomTextField
+                    label="Average amount per job"
+                    value={formData.avgAmountPerJob}
+                    name="avgAmountPerJob"
+                    onChange={handleChange}
+                    type="number"
+                  />
+                  <CustomTextField
+                    label="Number of permanent customers"
+                    value={formData.permanentCustomers}
+                    name="permanentCustomers"
+                    onChange={handleChange}
+                    type="number"
+                  />
+                  <CustomTextField
+                    label="For how many hours their mobile remain connected with internet"
+                    value={formData.internetHours}
+                    name="internetHours"
+                    onChange={handleChange}
+                    type="number"
+                  />
+                   <CustomRadio
+                  title="Can you install and use mobile app?"
+                  options={["yes", "No"]}
+                  value={formData.canInstallApp}
+                  name="canInstallApp"
+                  onChange={handleChange}
+                  />
+                  <CustomMultiSelect
+                    label="Which apps do you frequently use in your mobile?"
+                    options={[
+                      "whatsapp",
+                      "Facebook",
+                      "Instagram",
+                      "Twitter (X)",
+                      "Google (chrome)",
+                     
+                    ]}
+                    value={formData.frequentlyUsedApps}
+                    name="frequentlyUsedApps"
+                    onChange={handleChange}
+                  />
+                  
                   <Typography
                     variant="h6"
                     gutterBottom
@@ -507,29 +583,14 @@ const HandymanRegistration = () => {
 
               {/* Message Display */}
               {message && (
-                <Card
-                  elevation={5}
-                  sx={{
-                    padding: "6px 12px",
-                    boxShadow: 3,
-                    borderRadius: 4,
-                    backgroundColor: "#f5f5f5",
-                    border: "1px solid #ddd",
-                    minHeight: "30px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center", // Centers text inside the card
-                    fontSize: { xs: "0.875rem", sm: "1rem" },
-                    maxWidth: { xs: "100%", sm: "auto" }, // Full width on mobile
-                    textAlign: "center", // Centers text
-                  }}
-                >
-                  {message}
-                </Card>
+               <Alert severity="success">{message}</Alert>
+              )}
+              {error && (
+               <Alert severity="error">{error}</Alert>
               )}
 
               {/* Reset Button */}
-              {message && (
+              {message || error && (
                 <Button
                   variant="contained"
                   component="span"

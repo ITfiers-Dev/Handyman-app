@@ -65,7 +65,7 @@ const CustomFileUpload: React.FC<CustomFileUploadProps> = ({
               "&:hover": { bgcolor: "#1976D2" }, 
             }}
           >
-            Choose File
+            Upload Photo
           </Button>
         </label>
 
