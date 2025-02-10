@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Autocomplete, TextField, Box, Card } from "@mui/material";
+import { Autocomplete, TextField, Box, Card, Typography } from "@mui/material";
 import jsonData from "../data.json"; // Ensure this path is correct
 
 // Define the type for geofences
@@ -67,6 +67,9 @@ export default function AreaTextField({
           gap: 4,
         }}
       >
+        <Typography sx={{mb:2}}>
+          City & Area
+        </Typography>
         {/* City Selection */}
         <Autocomplete
           options={cities}
