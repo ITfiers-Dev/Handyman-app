@@ -505,14 +505,14 @@ const HandymanRegistration = () => {
                     value={formData.startTime}
                     name="startTime"
                     onChange={handleChange}
-                    helperText="Pick a starting time"
+                    helperText="Pick a work starting time"
                   />
                   <TimePicker
                     label=" Working End Time"
                     value={formData.endTime}
                     name="endTime"
                     onChange={handleChange}
-                    helperText="Pick a starting time"
+                    helperText="Pick a work ending time"
                   />
                   <Typography
                     variant="h6"
