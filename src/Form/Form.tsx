@@ -94,35 +94,95 @@ const HandymanRegistration = () => {
   };
 
   console.log("formData", formData);
-
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+    setMessage("");
+    setError("");
+    let requiredFields = ["usedPlatforms"]; // 'usedPlatforms' is always required
+  
+    if (formData.usedPlatforms.trim().toLowerCase() === "yes") {
+      requiredFields.push("platformName"); // 'platformName' is required only if 'usedPlatforms' is "yes"
+    }
+    
+    if (
+      formData.interestedInPlumbingServices.trim().toLowerCase() === "yes" &&
+      formData.haveSmartPhone.trim().toLowerCase() === "yes"
+    ) {
+      requiredFields.push(
+        "fullName",
+        "dateOfBirth",
+        "whatsappNumber",
+        "otherContactNumber",
+        "completeAddress",
+        "area",
+        "city",
+        "photo",
+        "idCardNumber",
+        "idCardImageFront",
+        "idCardImageBack",
+        "yearsOfExperience",
+        "expertise",
+        "specialization",
+        "servingCity",
+        "servingAreas",
+        "workingDays",
+        "workingHours",
+        "startTime",
+        "endTime",
+        "easyPaisaNumber",
+        "jazzCashNumber",
+        "bankName",
+        "bankAccountNumber",
+        "avgJobsPerDay",
+        "avgAmountPerJob",
+        "permanentCustomers",
+        "internetHours",
+        "canInstallApp",
+        "frequentlyUsedApps"
+      );
+    }
+  
+    const missingFields = requiredFields.filter((field) => {
+      const value = formData[field as keyof typeof formData];
+      if (typeof value !== "string") {
+        return !value || (Array.isArray(value) && value.length === 0); 
+      }
+  
+      return !value.trim(); 
+    });
+  
+    if (missingFields.length > 0) {
+      setError(`Required fields: ${missingFields.join(", ")}`);
+      setLoading(false);
+      return; 
+    }
+  
     setLoading(true);
-    setMessage(""); // Reset message before new request
   
     try {
-      const res = await updateDBPost({data: formData});
-      
-      if (res.status ==="success"){
-        setMessage(res?.message || "Successfully updated"); // Use optional chaining
+      const res = await updateDBPost({ data: formData });
+  
+      if (res.status === "success") {
+        setMessage(res?.message || "Successfully updated"); 
         console.log(res);
-      }else{
+      } else {
         setError(res?.message || "Something went wrong. Please try again.");
       }
     } catch (error: any) {
       console.error("An error occurred:", error);
       setError(error?.message || "Something went wrong. Please try again.");
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   };
+  
   
 
   const handleDateChange = (date: any, name: string) => {
     if (date) {
       const formattedDate = dayjs(date).format("DD/MM/YYYY");
-      console.log(formattedDate); // ✅ Store in standard format
-      setFormData((prev) => ({ ...prev, [name]: formattedDate })); // ✅ Update state
+      console.log(formattedDate); 
+      setFormData((prev) => ({ ...prev, [name]: formattedDate }));
     }
   };
 
@@ -166,6 +226,7 @@ const HandymanRegistration = () => {
       frequentlyUsedApps: []
     });
     setMessage("");
+    setError("")
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
   
@@ -453,13 +514,13 @@ const HandymanRegistration = () => {
                     onChange={handleChange}
                     helperText="Pick a starting time"
                   />
-                   <Typography
+                  <Typography
                     variant="h6"
                     gutterBottom
                     align="left"
                     sx={{ fontWeight: 600 }}
                   >
-                  User Activity & Engagement Metrics
+                    User Activity & Engagement Metrics
                   </Typography>
                   <CustomTextField
                     label="Average number of jobs per day"
@@ -489,12 +550,12 @@ const HandymanRegistration = () => {
                     onChange={handleChange}
                     type="number"
                   />
-                   <CustomRadio
-                  title="Can you install and use mobile app?"
-                  options={["yes", "No"]}
-                  value={formData.canInstallApp}
-                  name="canInstallApp"
-                  onChange={handleChange}
+                  <CustomRadio
+                    title="Can you install and use mobile app?"
+                    options={["yes", "No"]}
+                    value={formData.canInstallApp}
+                    name="canInstallApp"
+                    onChange={handleChange}
                   />
                   <CustomMultiSelect
                     label="Which apps do you frequently use in your mobile?"
@@ -504,13 +565,12 @@ const HandymanRegistration = () => {
                       "Instagram",
                       "Twitter (X)",
                       "Google (chrome)",
-                     
                     ]}
                     value={formData.frequentlyUsedApps}
                     name="frequentlyUsedApps"
                     onChange={handleChange}
                   />
-                  
+
                   <Typography
                     variant="h6"
                     gutterBottom
@@ -582,15 +642,10 @@ const HandymanRegistration = () => {
               </Button>
 
               {/* Message Display */}
-              {message && (
-               <Alert severity="success">{message}</Alert>
-              )}
-              {error && (
-               <Alert severity="error">{error}</Alert>
-              )}
+              {message && <Alert severity="success">{message}</Alert>}
+              {error && <Alert severity="error">{error}</Alert>}
 
-              {/* Reset Button */}
-              {message || error && (
+              {(message) && (
                 <Button
                   variant="contained"
                   component="span"
