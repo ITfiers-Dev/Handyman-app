@@ -72,7 +72,7 @@ const CustomFileUpload: React.FC<CustomFileUploadProps> = ({
         {fileName && (
           <Box sx={{ marginTop: 1, border: "1px solid #ddd", padding: 1,bgcolor: "#e1f2f2", 
             color: "black", borderRadius: 3,
-            "&:hover": { bgcolor: "#1976D2" }, 
+            "&:hover": { bgcolor: "#21CBF3" }, 
             fontSize: "8px",
            }}>
             <Typography variant="body2">Selected file: {fileName}</Typography>

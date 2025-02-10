@@ -98,10 +98,10 @@ const HandymanRegistration = () => {
     event.preventDefault();
     setMessage("");
     setError("");
-    let requiredFields = ["usedPlatforms"]; // 'usedPlatforms' is always required
+    let requiredFields = ["usedPlatforms"]; 
   
     if (formData.usedPlatforms.trim().toLowerCase() === "yes") {
-      requiredFields.push("platformName"); // 'platformName' is required only if 'usedPlatforms' is "yes"
+      requiredFields.push("platformName"); 
     }
     
     if (
